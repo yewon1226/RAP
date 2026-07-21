@@ -107,6 +107,7 @@ lo_obj = NEW #( )
 </br>
 </br>
 
+- 신문법
 ```abap
 SELECT SINGLE FROM <테이블명>      " 단 건 조회
   FIELDS <필드1>, <필드2>, ...
@@ -128,4 +129,35 @@ CLASS zcl_a06_w02 IMPLEMENTATION.
     out->write( connections ).
   ENDMETHOD.
 ENDCLASS.
+```
+</br>
+</br>
+
+### Case 1
+- VALUE는 구조체를 그대로 넣을 수 없으며, 필드명 = 값 형식으로 필드를 지정해야 
+```abap
+*   Case 1
+    DATA ls_info LIKE connection.
+    ls_info = value #( airpfrom = connection-airpfrom ).    " O (필드 지정)
+*   DATA(ls_info) = value #( connection ).                  " X (구조체 전체 입력 → 오류)
+```
+</br>
+
+### Case 2
+- `WITH EMPTY KEY` 를 지정해 키가 없는 내부 테이블을 정의해야 `VALUE` 로 여러 행을 생성 가능
+```abap
+ TYPES: BEGIN OF ts_info,
+             carrid TYPE spfli-carrid,
+           END OF ts_info,
+           tt_info TYPE TABLE OF ts_info WITH EMPTY KEY.
+
+*    MOVE-CORRESPONDING connection TO data(ls_info).
+*    DATA(ls_info) = CORRESPONDING ts_info( connection ).
+    DATA(ls_info) = VALUE ts_info( carrid = connection-carrid ).             " O (구조체 생성)
+
+    DATA lt_info TYPE tt_info.
+    lt_info = VALUE #( ( carrid = 'AA' ) ( carrid = 'AB' ) ).                " O (타입 추론)
+    DATA(lt_temp) = VALUE tt_info( ( carrid = 'AA' ) ( carrid = 'AB' ) ).    " O (타입 직접 지정)
+    out->write( lt_temp ).
+  ENDMETHOD.
 ```
