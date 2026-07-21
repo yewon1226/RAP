@@ -15,8 +15,7 @@
 </br>
 </br>
 
-- F9 클릭시 출력
-- 로컬변순데 gv_로 써서 문제. lv_로 써야함
+문제: 로컬 변수인데 gv_를 사용함 → 로컬 변수는 `lv_` , 전역 변수는 `gv_` 를 사용해야 함
 ```abap
 CLASS zcl_a06_w01 IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
