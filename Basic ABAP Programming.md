@@ -161,3 +161,13 @@ ENDCLASS.
     out->write( lt_temp ).
   ENDMETHOD.
 ```
+</br>
+
+### Case 3
+- `ASSIGN` 으로 인터널 테이블 행을 필드 심볼에 연결하여 원본을 직접 변경
+```abap
+ASSIGN connections[ carrid = 'UA' connid = '3516' ]
+    TO FIELD-SYMBOL(<fs_info>).
+CLEAR <fs_info>.
+out->write( connections ).
+```
