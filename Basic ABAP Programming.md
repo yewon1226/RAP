@@ -104,3 +104,28 @@ DATA(lo_obj) = NEW zcl_test( ).
 DATA lo_obj TYPE REF TO zcl_test.
 lo_obj = NEW #( )
 ```
+</br>
+</br>
+
+```abap
+SELECT SINGLE FROM <테이블명>      " 단 건 조회
+  FIELDS <필드1>, <필드2>, ...
+  WHERE <조건>
+  INTO @DATA(<구조체>).
+
+SELECT FROM <테이블명>             " 다 건 조회
+  FIELDS <필드1>, <필드2>, ...
+  WHERE <조건>
+  INTO TABLE @DATA(<내부테이블>).
+```
+```abap
+CLASS zcl_a06_w02 IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    SELECT SINGLE FROM spfli
+        FIELDS *
+        WHERE carrid = 'AA'
+        INTO @DATA(connections).
+    out->write( connections ).
+  ENDMETHOD.
+ENDCLASS.
+```
