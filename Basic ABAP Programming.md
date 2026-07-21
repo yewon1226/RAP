@@ -144,7 +144,7 @@ ENDCLASS.
 </br>
 
 ### Case 2
-- `WITH EMPTY KEY` 를 지정해 키가 없는 내부 테이블을 정의해야 `VALUE` 로 여러 행을 생성 가능
+- 인터널 테이블을 `VALUE` 로 생성하려면 테이블 타입에 키(`WITH EMPTY KEY` 또는 `WITH KEY`)를 정의해야 함
 ```abap
  TYPES: BEGIN OF ts_info,
              carrid TYPE spfli-carrid,
