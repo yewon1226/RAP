@@ -179,4 +179,244 @@ out->write( connections ).
 
 ## 과제
 
+- eclipse
+```abap
+CLASS zcl_a06ex01 DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    TYPES: BEGIN OF ts_sbook,
+             year   TYPE c LENGTH 4,
+             carrid TYPE sbook-carrid,
+             class  TYPE sbook-class,
+             res_1  TYPE i, can_1    TYPE i,
+             res_2  TYPE i, can_2    TYPE i,
+             res_3  TYPE i, can_3    TYPE i,
+             res_4  TYPE i, can_4    TYPE i,
+             res_5  TYPE i, can_5    TYPE i,
+             res_6  TYPE i, can_6    TYPE i,
+             res_7  TYPE i, can_7    TYPE i,
+             res_8  TYPE i, can_8    TYPE i,
+             res_9  TYPE i, can_9    TYPE i,
+             res_10 TYPE i, can_10   TYPE i,
+             res_11 TYPE i, can_11   TYPE i,
+             res_12 TYPE i, can_12   TYPE i,
+           END OF ts_sbook.
+    TYPES tt_sbook TYPE TABLE OF ts_sbook WITH KEY year carrid class.
+
+    METHODS set_book
+      IMPORTING pa_carr TYPE sbook-carrid
+      EXPORTING lt_book TYPE tt_sbook.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_a06ex01 IMPLEMENTATION.
+  METHOD set_book.
+    CLEAR lt_book.
+    SELECT FROM sbook
+      FIELDS substring( fldate, 1, 4 ) AS year,
+             carrid                    AS carrid,
+             class                     AS class,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '01' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_1,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '01' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_1,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '02' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_2,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '02' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_2,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '03' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_3,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '03' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_3,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '04' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_4,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '04' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_4,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '05' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_5,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '05' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_5,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '06' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_6,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '06' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_6,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '07' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_7,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '07' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_7,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '08' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_8,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '08' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_8,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '09' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_9,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '09' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_9,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '10' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_10,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '10' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_10,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '11' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_11,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '11' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_11,
+
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '12' AND cancelled = ' ' THEN 1 ELSE 0 END ) AS res_12,
+             SUM( CASE WHEN substring( fldate, 5, 2 ) = '12' AND cancelled = 'X' THEN 1 ELSE 0 END ) AS can_12
+      WHERE carrid = @pa_carr
+      GROUP BY substring( fldate, 1, 4 ), carrid, class
+      ORDER BY substring( fldate, 1, 4 ), carrid, class
+      INTO TABLE @lt_book.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+- Report Program
+```abap
+REPORT ZR_A0601.
+
+INCLUDE ZR_A0601_TOP.
+INCLUDE ZR_A0601_O01.
+INCLUDE ZR_A0601_I01.
+INCLUDE ZR_A0601_F01.
+
+START-OF-SELECTION.
+  PERFORM set_data.
+  CALL SCREEN 100.
+```
+
+- TOP
+```abap
+DATA: OK_CODE TYPE sy-ucomm.
+
+DATA: go_cont TYPE REF TO CL_GUI_CUSTOM_CONTAINER,
+      go_alv TYPE REF TO CL_GUI_ALV_GRID.
+DATA: go_book TYPE REF TO zcl_a06ex01.
+DATA: gt_fcat TYPE lvc_t_fcat,
+      gs_fcat TYPE lvc_s_fcat.
+DATA: gt_data TYPE zcl_a06ex01=>tt_sbook.
+
+PARAMETERS: pa_carr TYPE spfli-carrid.
+```
+
+- O01
+```abap
+""""""""""""""""""""""" STATUS_0100 """"""""""""""""""""""""
+MODULE status_0100 OUTPUT.
+  SET PF-STATUS 'S100'.
+ENDMODULE.
+
+"""""""""""""""""""""""" INIT_ALV """"""""""""""""""""""""
+MODULE init_alv OUTPUT.
+  IF go_cont IS INITIAL.
+    CREATE OBJECT go_cont
+      EXPORTING
+        container_name              = 'AREA'
+      EXCEPTIONS
+        cntl_error                  = 1
+        cntl_system_error           = 2
+        create_error                = 3
+        lifetime_error              = 4
+        lifetime_dynpro_dynpro_link = 5
+        OTHERS                      = 6.
+
+    CREATE OBJECT go_alv
+      EXPORTING
+        i_parent          = go_cont
+      EXCEPTIONS
+        error_cntl_create = 1
+        error_cntl_init   = 2
+        error_cntl_link   = 3
+        error_dp_create   = 4
+        OTHERS            = 5.
+
+    PERFORM set_fcat.
+
+    CALL METHOD go_alv->set_table_for_first_display
+      CHANGING
+        it_outtab                     = gt_data
+        it_fieldcatalog               = gt_fcat
+      EXCEPTIONS
+        invalid_parameter_combination = 1
+        program_error                 = 2
+        too_many_lines                = 3
+        OTHERS                        = 4.
+  ENDIF.
+ENDMODULE.
+```
+
+- I01
+```abap
+"""""""""""""""""""""""" USER_COMMAND_0100 """"""""""""""""""""""""
+MODULE user_command_0100 INPUT.
+  CASE OK_CODE.
+    WHEN 'BACK'.
+      LEAVE TO SCREEN 0.
+  ENDCASE.
+ENDMODULE.
+
+"""""""""""""""""""""""" EXIT """"""""""""""""""""""""
+MODULE exit INPUT.
+  CASE OK_CODE.
+    WHEN 'EXIT'.
+      LEAVE PROGRAM.
+    WHEN 'CANCEL'.
+      LEAVE TO SCREEN 0.
+  ENDCASE.
+ENDMODULE.
+```
+
+- F01
+```abap
+"""""""""""""""""""""""" set_data """"""""""""""""""""""""
+FORM set_data .
+  go_book = NEW #( ).
+
+  CALL METHOD go_book->set_book
+    EXPORTING
+      pa_carr = pa_carr
+    IMPORTING
+      lt_book = gt_data.
+ENDFORM.
+
+"""""""""""""""""""""""" set_fcat """"""""""""""""""""""""
+FORM set_fcat .
+  CLEAR gt_fcat.
+
+  PERFORM append_fcat USING 'YEAR'   'X' '년도'.
+  PERFORM append_fcat USING 'CARRID' 'X' '항공사코드'.
+  PERFORM append_fcat USING 'CLASS'  'X' '클래스'.
+
+  PERFORM append_fcat USING 'RES_1'  ' ' '1월 예약건수'.
+  PERFORM append_fcat USING 'CAN_1'  ' ' '1월 취소건수'.
+  PERFORM append_fcat USING 'RES_2'  ' ' '2월 예약건수'.
+  PERFORM append_fcat USING 'CAN_2'  ' ' '2월 취소건수'.
+  PERFORM append_fcat USING 'RES_3'  ' ' '3월 예약건수'.
+  PERFORM append_fcat USING 'CAN_3'  ' ' '3월 취소건수'.
+  PERFORM append_fcat USING 'RES_4'  ' ' '4월 예약건수'.
+  PERFORM append_fcat USING 'CAN_4'  ' ' '4월 취소건수'.
+  PERFORM append_fcat USING 'RES_5'  ' ' '5월 예약건수'.
+  PERFORM append_fcat USING 'CAN_5'  ' ' '5월 취소건수'.
+  PERFORM append_fcat USING 'RES_6'  ' ' '6월 예약건수'.
+  PERFORM append_fcat USING 'CAN_6'  ' ' '6월 취소건수'.
+  PERFORM append_fcat USING 'RES_7'  ' ' '7월 예약건수'.
+  PERFORM append_fcat USING 'CAN_7'  ' ' '7월 취소건수'.
+  PERFORM append_fcat USING 'RES_8'  ' ' '8월 예약건수'.
+  PERFORM append_fcat USING 'CAN_8'  ' ' '8월 취소건수'.
+  PERFORM append_fcat USING 'RES_9'  ' ' '9월 예약건수'.
+  PERFORM append_fcat USING 'CAN_9'  ' ' '9월 취소건수'.
+  PERFORM append_fcat USING 'RES_10' ' ' '10월 예약건수'.
+  PERFORM append_fcat USING 'CAN_10' ' ' '10월 취소건수'.
+  PERFORM append_fcat USING 'RES_11' ' ' '11월 예약건수'.
+  PERFORM append_fcat USING 'CAN_11' ' ' '11월 취소건수'.
+  PERFORM append_fcat USING 'RES_12' ' ' '12월 예약건수'.
+  PERFORM append_fcat USING 'CAN_12' ' ' '12월 취소건수'.
+ENDFORM.
+
+"""""""""""""""""""""""" append_fcat """"""""""""""""""""""""
+FORM append_fcat USING pa_fieldname TYPE lvc_s_fcat-fieldname
+                       pa_key       TYPE lvc_s_fcat-key
+                       pa_coltext   TYPE lvc_s_fcat-coltext.
+  CLEAR gs_fcat.
+  gs_fcat-fieldname = pa_fieldname.
+  gs_fcat-key       = pa_key.
+  gs_fcat-coltext   = pa_coltext.
+  APPEND gs_fcat TO gt_fcat.
+ENDFORM.
+```
+
 <img width="1205" height="666" alt="image" src="https://github.com/user-attachments/assets/8676f193-890c-474b-80f7-821278c8b6a5" />
