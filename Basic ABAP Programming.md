@@ -179,6 +179,8 @@ out->write( connections ).
 
 ## 과제
 
+<img width="1205" height="666" alt="image" src="https://github.com/user-attachments/assets/8676f193-890c-474b-80f7-821278c8b6a5" />
+
 - eclipse
 ```abap
 CLASS zcl_a06ex01 DEFINITION
@@ -418,5 +420,3 @@ FORM append_fcat USING pa_fieldname TYPE lvc_s_fcat-fieldname
   APPEND gs_fcat TO gt_fcat.
 ENDFORM.
 ```
-
-<img width="1205" height="666" alt="image" src="https://github.com/user-attachments/assets/8676f193-890c-474b-80f7-821278c8b6a5" />
